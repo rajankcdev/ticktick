@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TickTick Lottery</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #1e1e1e, #2a2a2a);
+      color: #f0f0f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 960px;
+      background: transparent;
+      padding: 10px;
+    }
+
+    h1 {
+      color: #e50914;
+      font-size: 3rem;
+      margin-bottom: 2rem;
+      text-align: center;
+      letter-spacing: 1px;
+      animation: pulse 2s infinite;
+    }
+
+    .section {
+      margin: 24px 0;
+      padding: 24px;
+      background: #1c1c1c;
+      border-radius: 12px;
+      border: 1px solid #333;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      animation: fadeInUp 0.6s ease forwards;
+    }
+
+    .section:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+    }
+
+    .highlight {
+      font-size: 1.4rem;
+      font-weight: 500;
+      color: #4dabf7;
+    }
+
+    footer {
+      margin-top: 10px;
+      font-size: 0.9rem;
+      color: #ccc;
+      background: #111;
+      padding: 15px;
+      width: 100%;
+      text-align: center;
+      border-top: 1px solid #444;
+    }
+
+    footer a {
+      color: #64b5f6;
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 40px 16px;
+      }
+      .card {
+        padding: 20px;
+      }
+      h1 {
+        font-size: 2rem;
+      }
+      .highlight {
+        font-size: 1.1rem;
+      }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+  </style>
+</head>
+<body>
+  <div style="
+    text-align: center;
+    margin: 20px 0;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #ffffff;
+    background: linear-gradient(to right, #ff416c, #ff4b2b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  ">TickTick</div>
+
+  <div style="text-align: center; color: #aaa; font-size: 1rem; margin-top: -10px; margin-bottom: 30px; font-style: italic; letter-spacing: 1px;">
+    The luckiest memecoin on Solana
+  </div>
+
+  <div class="card">
+    <h1>TickTick Hourly Reward</h1>
+
+    <div class="section">
+      <p style="font-size: 1.5rem; color: #e50914;"><strong>Last Winner:</strong></p>
+      <p class="highlight" id="winner">Loading...</p>
+    </div>
+
+    <div class="section">
+      <p style="font-size: 1.5rem; color: #e50914;"><strong>Buyback Burn Amount:</strong></p>
+      <p class="highlight" id="burn">Loading...</p>
+    </div>
+
+    <div class="section">
+      <p style="font-size: 1.5rem; color: #e50914;"><strong>Next Draw In:</strong></p>
+      <p class="highlight" id="timer">Loading...</p>
+    </div>
+
+    <div class="section">
+      <p style="font-size: 1.5rem; color: #e50914;"><strong>How It Works:</strong></p>
+      <p class="highlight">
+        TickTick collects a 1% tax from all trades every hour.<br><br>
+        <strong>🔥 50%</strong> is used to buy back and permanently burn $TICKTICK.<br>
+        <strong>🎁 50%</strong> is converted to SOL and awarded to <span style="text-decoration: none;">one lucky holder</span> who holds at least $100 worth of $TICKTICK.<br><br>
+        <em>⏰ Tick. Tick. Boom..</em>
+      </p>
+    </div>
+  </div>
+
+  <footer>
+    Follow us on <a href="https://x.com/TickTickCoin" target="_blank">@TickTickCoin</a>
+  </footer>
+
+  <script>
+    function updateTimer() {
+      const now = new Date();
+      const nextHour = new Date();
+      nextHour.setHours(now.getHours() + 1, 0, 0, 0);
+      const diff = nextHour - now;
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      document.getElementById("timer").textContent = `${minutes}m ${seconds}s`;
+    }
+
+    async function loadWinner() {
+      try {
+        const res = await fetch("winner.json");
+        const data = await res.json();
+        document.getElementById("winner").textContent = data.winner;
+        document.getElementById("burn").textContent = `${data.buyback} SOL`;
+      } catch (e) {
+        console.error(e);
+        document.getElementById("winner").textContent = "Error loading data";
+      }
+    }
+
+    loadWinner();
+    updateTimer();
+    setInterval(loadWinner, 60000);
+    setInterval(updateTimer, 1000);
+  </script>
+</body>
+</html>
